@@ -92,7 +92,7 @@ update() {
             replies_count BIGINT,
             reblogs_count BIGINT,
             favourites_count BIGINT,
-            created_at VARCHAR
+            created_at TIMESTAMP
         );
     "
 
@@ -132,14 +132,14 @@ update() {
                     replies_count, 
                     reblogs_count, 
                     favourites_count, 
-                    created_at 
+                    strptime(created_at, '%Y-%m-%dT%H:%M:%S.%gZ') 
                 FROM read_json_auto('/dev/stdin');
         " <<< $statuses
 
         # Set the min_in to the last processed response id and start over
         min_id=$(jq -r '[.[] | .id] | max' <<< "$response")
     done    
-
+    printf "\n"
 }
 
 # This script requires curl, duckdb and jq installed. Check if they are available
